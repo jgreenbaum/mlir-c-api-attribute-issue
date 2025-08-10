@@ -3,6 +3,8 @@
 This repo demonstrates an issue trying to access the `cond`
 attribute of the CIRCT SV MLIR Dialect [`sv.ifdef.procedural`](https://circt.llvm.org/docs/Dialects/SV/#svifdefprocedural-circtsvifdefproceduralop) operator.
 
+See [this post](https://discourse.llvm.org/t/dialect-attributes-in-mlir-c-api/87800) on the LLVM forums for a full description.
+
 # Building
 
 You need a build of MLIR + CIRCT Dialects. My most recent builds have used the [manual compilation directions for the CIRCT Python Bindings](https://circt.llvm.org/docs/PythonBindings/#manual-compilation) since the Python bindings also sit on top of the MLIR C API. 
