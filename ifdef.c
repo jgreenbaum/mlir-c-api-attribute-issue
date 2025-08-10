@@ -76,6 +76,35 @@ int main(int argc, char **argv)
     printf("cond value printed: "); fflush(stdout);mlirAttributePrint(cond_attr, print_callback, 0);
     putchar('\n');
 
+    // Can I write to it?
+    if (mlirOperationVerify(ifdef_op)) {
+        printf("Op verifies before writing\n");
+    } else {
+        printf("Op fails to verify even before writing\n");
+    }
+
+    printf("Trying to write it ...\n");
+    MlirStringRef cond_expr_str = mlirStringRefCreateFromCString("#sv<macro.ident @FOO>");
+    MlirAttribute my_cond_attr = svSVAttributeAttrGet(ctx, cond_str, cond_expr_str, false);
+    if (mlirAttributeIsNull(my_cond_attr)) {
+        printf("Failed to create attr.");
+    } else {
+        printf("my_cond_attr value printed: "); fflush(stdout);mlirAttributePrint(my_cond_attr, print_callback, 0); putchar('\n');
+        mlirOperationSetInherentAttributeByName(ifdef_op, cond_str, my_cond_attr);
+        MlirAttribute readback_cond_attr = mlirOperationGetInherentAttributeByName(ifdef_op, cond_str);
+        if (mlirAttributeIsNull(readback_cond_attr)) {
+            printf("readback_cond_attr is NULL!\n");
+            if (mlirOperationVerify(ifdef_op)) {
+                printf("Op still verifies\n");
+            } else {
+                printf("Op fails to verify after writing\n");
+            }
+        } else {
+            printf("readback_cond_attr value printed: "); fflush(stdout);mlirAttributePrint(readback_cond_attr, print_callback, 0);
+            putchar('\n');
+        }
+    }
+
     // Just trying to assume it is an SV Attribute fails in a class cast expression
     // ifdef: /home/jack/projects/circt/circt/llvm/llvm/include/llvm/Support/Casting.h:566: decltype(auto) llvm::cast(const From&) [with To = circt::sv::SVAttributeAttr; From = mlir::Attribute]: Assertion `isa<To>(Val) && "cast<Ty>() argument of incompatible type!"' failed.
     svSVAttributeAttrGetExpression(cond_attr);
